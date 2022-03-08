@@ -18,10 +18,11 @@ def equation(x):
         return y
 win = Tk()
 win.geometry('400x170')
+win.title("Chatbot Training")
 class ChatbotGUI():
     def __init__(self):
         self.current_word=None
-        self.database = getDatabase(db_connection,'chatbot_data.greetings')
+        self.database = getDatabase (db_connection,'chatbot_data.greetings')
         self.words_id = self.database.getWordsID()
         self.words_factor = self.database.getWords()
         self.IDwords = self.database.getIDWords()
@@ -34,14 +35,14 @@ class ChatbotGUI():
             x = self.words_factor[self.current_word]
             y = ((1-equation(x))*(x-.05))
             if y >= 2 or y <= 0:
-                print(f'Stop: {self.IDwords[self.current_word]}, {x}')
+                print(f'New Value: {self.IDwords[self.current_word]}, {x}')
                 self.database.updateValue(self.IDwords[self.current_word],x)
                 percent = (x/4)*100
                 self.find_percent[self.current_word]=int(percent)
             else:
                 self.words_factor[self.current_word] = y
                 self.database.updateValue(self.IDwords[self.current_word],y)
-                print(f'No: {self.current_word}, {self.words_factor[self.current_word]}')
+                print(f'New Value: {self.current_word}, {self.words_factor[self.current_word]}')
                 percent = (y/4)*100
                 self.find_percent[self.current_word]=int(percent)
         except KeyError:
@@ -51,13 +52,13 @@ class ChatbotGUI():
             x = self.words_factor[self.current_word]
             y = ((1+equation(x))*(x+.05))
             if y >= 2 or y <= 0:
-                print(f'Stop: {x}')
+                print(f'New Value: {x}')
                 self.database.updateValue(self.IDwords[self.current_word],x)
                 percent = (x/4)*100
                 self.find_percent[self.current_word]=int(percent)
             else:
                 self.words_factor[self.current_word] = y
-                print(f'Yes: {self.current_word}, {self.words_factor[self.current_word]}')
+                print(f'New Value: {self.current_word}, {self.words_factor[self.current_word]}')
                 self.database.updateValue(self.IDwords[self.current_word],y)
                 percent = (y/4)*100
                 self.find_percent[self.current_word]=int(percent)
@@ -80,7 +81,5 @@ yes_button.pack(side='top')
 no_button.pack(side='top')
 again_button.pack(side='top')
 win.mainloop()  
-my_databse = getDatabase(db_connection, 'SELECT * FROM chatbot_data.goodbye;')
-print(my_databse.test())
 #use /4 to find percentages
 # print(math.log(100,10))
