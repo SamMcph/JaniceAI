@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from gc import get_referents
 from locale import currency
 from msilib.schema import Error
+from multiprocessing import allow_connection_pickling
 from tkinter import *   
 import random
 import math
@@ -22,7 +23,8 @@ win.title("Chatbot Training")
 class ChatbotGUI():
     def __init__(self):
         self.current_word=None
-        self.database = getDatabase (db_connection,'chatbot_data.greetings')
+        self.intent = 'chatbot_data.greetings'
+        self.database = getDatabase (db_connection,self.intent)
         self.words_id = self.database.getWordsID()
         self.words_factor = self.database.getWords()
         self.IDwords = self.database.getIDWords()
@@ -65,18 +67,26 @@ class ChatbotGUI():
         except KeyError:
             print("No current word")
     def giveWord(self):
-        my_percents = []
-        my_words= []
-        for i in self.find_percent:
-            my_percents.append(self.find_percent[i])
-            my_words.append(i)
-        random_word = random.choices(my_words,weights=my_percents)
-        print(f'Computer: {random_word[0]}: {self.words_factor[random_word[0]]}')
-        self.current_word = random_word[0]
+        while True:
+            user_text = input("User: ")
+            all_words = self.database.getAllWords()
+            for i in all_words:
+                if i == user_text.lower():
+                    self.intent = all_words[i]
+                    print(self.intent)
+                    break
+            my_percents = []
+            my_words= []
+            for i in self.find_percent:
+                my_percents.append(self.find_percent[i])
+                my_words.append(i)
+                random_word = random.choices(my_words,weights=my_percents)
+            print(f'Computer: {random_word[0]}: {self.words_factor[random_word[0]]}')
+            self.current_word = random_word[0]
 chatbotGUI = ChatbotGUI()
 yes_button = Button(win, text="Yes", bd=5,width=100,height=2,fg='red', command=chatbotGUI.yes)
 no_button = Button(win,text='No',bd=5,width=100,height=2, fg='blue',command=chatbotGUI.no)
-again_button = Button(win, text="Give Word", bd=5,width=100,height=2, fg='green',command=chatbotGUI.giveWord)
+again_button = Button(win, text="Start Conversation", bd=5,width=100,height=2, fg='green',command=chatbotGUI.giveWord)
 yes_button.pack(side='top')
 no_button.pack(side='top')
 again_button.pack(side='top')

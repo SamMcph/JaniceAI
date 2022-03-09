@@ -36,8 +36,35 @@ class getDatabase():
             id_words[row[3]] = row[1]
         return id_words
     def updateValue(self, id, factor):
-        query = f"UPDATE {self.table} SET factor ='{str(factor)}' WHERE wordId='{str(id)}'"
+        query = f"UPDATE {self.table} SET factor ='{str(factor)}' WHERE wordId ='{str(id)}'"
         self.my_database.execute(str(query))
         with self.dbconnection.cursor() as cursor:
             cursor.execute(query)
             self.dbconnection.commit()
+    def getAllWords(self):
+        self.my_database.execute("SHOW FULL TABLES FROM chatbot_data;")
+        result = self.my_database.fetchall()
+        all_words = {}
+        for i in result:
+            self.my_database.execute(f'SELECT * FROM chatbot_data.{i[0]}')
+            result = self.my_database.fetchall()
+            for j in result:
+                all_words[j[3]]= j[2]
+        return all_words
+# import mysql.connector
+ 
+# mydb = mysql.connector.connect(
+#     host="localhost",
+#     user="root",
+#     password="",
+#     database="gfg"
+# )
+ 
+# mycursor = mydb.cursor()
+ 
+# mycursor.execute("Show tables;")
+ 
+# myresult = mycursor.fetchall()
+ 
+# for x in myresult:
+#     print(x)
