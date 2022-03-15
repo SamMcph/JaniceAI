@@ -1,11 +1,7 @@
-from cgitb import reset
-from logging.handlers import MemoryHandler
-import re
-from unittest import result
 class getDatabase():
-    def __init__(self,db_connection,table) -> None:
+    def __init__(self,db_connection,intent) -> None:
         self.dbconnection = db_connection
-        self.table = table 
+        self.table = intent 
         self.my_database = db_connection.cursor()
     def getTable(self):
         self.my_database.execute(f'SELECT * FROM {self.table};')
@@ -51,20 +47,3 @@ class getDatabase():
             for j in result:
                 all_words[j[3]]= j[2]
         return all_words
-# import mysql.connector
- 
-# mydb = mysql.connector.connect(
-#     host="localhost",
-#     user="root",
-#     password="",
-#     database="gfg"
-# )
- 
-# mycursor = mydb.cursor()
- 
-# mycursor.execute("Show tables;")
- 
-# myresult = mycursor.fetchall()
- 
-# for x in myresult:
-#     print(x)
