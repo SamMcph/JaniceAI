@@ -46,4 +46,8 @@ class getDatabase():
             result = self.my_database.fetchall()
             for j in result:
                 all_words[j[3]]= j[2]
+                try:
+                    all_words[j[5]] = j[2]
+                except IndexError:
+                    pass
         return all_words

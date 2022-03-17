@@ -9,7 +9,7 @@ import json
 try: 
     db_connection = mysql.connector.connect(host='localhost',user='root',password="1234",database='chatbot')
 except DatabaseError: 
-    print(DatabaseError)
+    print("There infact is an error that has occured probably because the database server isn't turned on.")
 def equation(x):
         y = (-1*(abs((x-1)/(math.e*(math.sqrt(1+pow(x-1,2)))))))+(math.e/10)
         return y
@@ -27,7 +27,7 @@ class ChatbotGUI():
             percent = (words_factor[i]/4)*100
             find_percent[i] = percent
         with open("percent.json",'w') as f:
-            json.dump(find_percent,f)
+            json.dump(find_percent,f,indent=4)
     def update_intent(self,intent):
         database = getDatabase(db_connection,intent)
         words_factor = database.getWords()
@@ -65,7 +65,7 @@ class ChatbotGUI():
                     json_dic[self.current_word]=int(percent)
                     json.dump(json_dic,f,indent=4)
         except KeyError:
-            print("No current word")
+            print("Please select the Start Conversation button to start the conversation")
     def yes(self):
         print(self.intent)
         database = getDatabase(db_connection,self.intent)
@@ -96,6 +96,8 @@ class ChatbotGUI():
         except KeyError:
             print("No current word")
     def giveWord(self):
+        again_button.pack_forget()
+        win.geometry("400x115")
         database = getDatabase(db_connection,self.intent)
         print("Computer: Hello User")
         while True:
