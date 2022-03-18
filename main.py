@@ -1,6 +1,8 @@
-from tkinter import *   
+from tkinter import *  
+import tkinter.ttk 
 import random
 import math
+from turtle import fillcolor
 from webbrowser import get
 from mysqlx import DatabaseError
 from getDatabase import getDatabase
@@ -14,14 +16,15 @@ def equation(x):
         y = (-1*(abs((x-1)/(math.e*(math.sqrt(1+pow(x-1,2)))))))+(math.e/10)
         return y
 win = Tk()
-win.geometry('400x170')
+win.geometry('400x600')
 win.title("Chatbot Training")
+win.resizable(width=FALSE, height=FALSE)
 class ChatbotGUI():
     def __init__(self):
         self.current_word=None
         self.intent = 'chatbot_data.greetings'
         database = getDatabase(db_connection,self.intent)
-        words_factor = database.getWords()
+        words_factor = database.getWords()  
         find_percent = {}
         for i in words_factor:
             percent = (words_factor[i]/4)*100
@@ -67,7 +70,7 @@ class ChatbotGUI():
         except KeyError:
             print("Please select the Start Conversation button to start the conversation")
     def yes(self):
-        print(self.intent)
+        print(self.current_word)
         database = getDatabase(db_connection,self.intent)
         words_factor = database.getWords()
         IDwords = database.getIDWords()
@@ -94,39 +97,61 @@ class ChatbotGUI():
                     json_dic[self.current_word]=int(percent)
                     json.dump(json_dic,f,indent=4)
         except KeyError:
-            print("No current word")
-    def giveWord(self):
-        again_button.pack_forget()
-        win.geometry("400x115")
+           print("Please select the Start Conversation button to start the conversation")
+    def giveWord(self,user_text):
         database = getDatabase(db_connection,self.intent)
-        print("Computer: Hello User")
-        while True:
-            user_text = input("User: ")
-            all_words = database.getAllWords()
-            for i in all_words:
-                if i == user_text.lower():
-                    self.intent = f'chatbot_data.{all_words[i]}'
-                    GUI = ChatbotGUI()
-                    GUI.update_intent(f'chatbot_data.{all_words[i]}')
-                    break
-            my_percents = []
-            my_words= []
-            the_database = getDatabase(db_connection,self.intent)
-            words_factor = the_database.getWords()
-            with open('percent.json', 'r') as openfile:
-                find_percent = json.load(openfile)
-            for i in find_percent:
-                my_percents.append(find_percent[i])
-                my_words.append(i)
-                random_word = random.choices(my_words,weights=my_percents)
-            print(f'Computer: {random_word[0]}: {words_factor[random_word[0]]}')
-            self.current_word = random_word[0]
+        all_words = database.getAllWords()
+        for i in all_words:
+            if i == user_text.lower():
+                self.intent = f'chatbot_data.{all_words[i]}'
+                GUI = ChatbotGUI()
+                GUI.update_intent(f'chatbot_data.{all_words[i]}')
+                # break
+        my_percents = []
+        my_words= []
+        the_database = getDatabase(db_connection,self.intent)
+        words_factor = the_database.getWords()
+        with open('percent.json', 'r') as openfile:
+            find_percent = json.load(openfile)
+        for i in find_percent:
+            my_percents.append(find_percent[i])
+            my_words.append(i)
+            random_word = random.choices(my_words,weights=my_percents)
+        print(f'Computer: {random_word[0]}: {words_factor[random_word[0]]}')
+        self.current_word = random_word[0]
+        return(f'{random_word[0]}: {words_factor[random_word[0]]}')
             
 chatbotGUI = ChatbotGUI()
 yes_button = Button(win, text="Yes", bd=5,width=100,height=2,fg='red', command=chatbotGUI.yes)
 no_button = Button(win,text='No',bd=5,width=100,height=2, fg='blue',command=chatbotGUI.no)
-again_button = Button(win, text="Start Conversation", bd=5,width=100,height=2, fg='green',command=chatbotGUI.giveWord)
-yes_button.pack(side='top')
-no_button.pack(side='top')
-again_button.pack(side='top')
+# again_button = Button(win, text="Start Conversation", bd=5,width=100,height=2, fg='green',command=chatbotGUI.giveWord)
+yes_button.pack(side='bottom')
+no_button.pack(side='bottom')
+# again_button.pack(side='top')
+def send():
+    msg = EntryBox.get("1.0",'end-1c').strip()
+    EntryBox.delete("0.0",END)
+
+    if msg != '':
+        ChatLog.config(state=NORMAL)
+        ChatLog.insert(END, "User: " + msg + '\n\n')
+        ChatLog.config(foreground="black", font=("Times", 12 ))
+        res = (chatbotGUI.giveWord(msg))
+        ChatLog.insert(END, "Computer: " + res + '\n\n')
+
+        ChatLog.config(state=DISABLED)
+        ChatLog.yview(END)
+ChatLog = Text(win, bd=0, bg="white", height="8", width="50", font="Times")
+ChatLog.config(state=DISABLED)
+scrollbar = Scrollbar(win,command=ChatLog.yview)
+ChatLog['yscrollcommand']=scrollbar.set
+
+SendButton = Button(win,font=("vedanta",12,'bold'), text="Send", width="12", height=5,
+                    bd=7, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
+                    command= send)
+EntryBox = Text(win,bd=0, bg="white",width="29", height="5", font="Times",)
+scrollbar.place(x=376,y=6, height=386)
+ChatLog.place(x=6,y=6, height=386, width=370)
+EntryBox.place(x=128, y=401, height=90, width=265)
+SendButton.place(x=-7, y=401, height=90) 
 win.mainloop()  
