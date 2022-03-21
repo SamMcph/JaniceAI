@@ -109,6 +109,7 @@ class ChatbotGUI():
                 # break
         my_percents = []
         my_words= []
+        print(self.intent)
         the_database = getDatabase(db_connection,self.intent)
         words_factor = the_database.getWords()
         with open('percent.json', 'r') as openfile:
@@ -119,19 +120,15 @@ class ChatbotGUI():
             random_word = random.choices(my_words,weights=my_percents)
         print(f'Computer: {random_word[0]}: {words_factor[random_word[0]]}')
         self.current_word = random_word[0]
-        return(f'{random_word[0]}: {words_factor[random_word[0]]}')
-            
+        return(f'{random_word[0]}: {words_factor[random_word[0]]}')   
 chatbotGUI = ChatbotGUI()
 yes_button = Button(win, text="Yes", bd=5,width=100,height=2,fg='red', command=chatbotGUI.yes)
 no_button = Button(win,text='No',bd=5,width=100,height=2, fg='blue',command=chatbotGUI.no)
-# again_button = Button(win, text="Start Conversation", bd=5,width=100,height=2, fg='green',command=chatbotGUI.giveWord)
-yes_button.pack(side='bottom')
 no_button.pack(side='bottom')
-# again_button.pack(side='top')
+yes_button.pack(side='bottom')
 def send():
     msg = EntryBox.get("1.0",'end-1c').strip()
     EntryBox.delete("0.0",END)
-
     if msg != '':
         ChatLog.config(state=NORMAL)
         ChatLog.insert(END, "User: " + msg + '\n\n')
@@ -145,7 +142,6 @@ ChatLog = Text(win, bd=0, bg="white", height="8", width="50", font="Times")
 ChatLog.config(state=DISABLED)
 scrollbar = Scrollbar(win,command=ChatLog.yview)
 ChatLog['yscrollcommand']=scrollbar.set
-
 SendButton = Button(win,font=("vedanta",12,'bold'), text="Send", width="12", height=5,
                     bd=7, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
                     command= send)

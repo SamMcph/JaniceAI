@@ -1,3 +1,4 @@
+import json
 class getDatabase():
     def __init__(self,db_connection,intent) -> None:
         self.dbconnection = db_connection
@@ -50,4 +51,6 @@ class getDatabase():
                     all_words[j[5]] = j[2]
                 except IndexError:
                     pass
+        with open('All_words.json','w') as f:
+            json.dump(all_words,f,indent=4)
         return all_words
