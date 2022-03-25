@@ -1,9 +1,6 @@
 from tkinter import *  
-import tkinter.ttk 
 import random
 import math
-from turtle import fillcolor
-from webbrowser import get
 from mysqlx import DatabaseError
 from getDatabase import getDatabase
 import mysql.connector
@@ -101,15 +98,16 @@ class ChatbotGUI():
     def giveWord(self,user_text):
         database = getDatabase(db_connection,self.intent)
         all_words = database.getAllWords()
+        known = False
         for i in all_words:
             if i == user_text.lower():
+                known = True
                 self.intent = f'chatbot_data.{all_words[i]}'
                 GUI = ChatbotGUI()
                 GUI.update_intent(f'chatbot_data.{all_words[i]}')
-                # break
+        print(f"Known: {known}")
         my_percents = []
         my_words= []
-        print(self.intent)
         the_database = getDatabase(db_connection,self.intent)
         words_factor = the_database.getWords()
         with open('percent.json', 'r') as openfile:
