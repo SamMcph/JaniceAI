@@ -7,13 +7,14 @@ def news():
     open_page = requests.get(main_url).json()
     article = open_page['articles']
     results = []
+    return_statment = ""
     for i in article:
         results.append(i['title'])
     for i in range (10):
-        print(f'{i + 1}: {results[i]}')
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-
+        return_statment = return_statment+(f'{i + 1}: {results[i]}\n')
+    return return_statment
 def weather(city):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
     city= (f'{city}+weather')
     res = requests.get(f'https://www.google.com/search?q={city}&oq={city}&aqs=chrome.0.35i39l2j0l4j46j69i60.6128j1j7&sourceid=chrome&ie=UTF-8',headers=headers)
     soup = BeautifulSoup(res.text,'html.parser')   
@@ -31,5 +32,6 @@ city = data['city']
 country=data['country']
 region=data['region']
 
-print(weather(data['city']))
-# news()
+weather_data = weather(data['city'])
+print(f"In {weather_data[2]} the current tempature is {weather_data[1]} with {weather_data[0]}")
+print(news())
