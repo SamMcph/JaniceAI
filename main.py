@@ -15,26 +15,6 @@ except DatabaseError:
 def equation(x):
         y = (-1*(abs((x-1)/(math.e*(math.sqrt(1+pow(x-1,2)))))))+(math.e/10)
         return y
-# def checkNonDatabaseLine(user_text):
-#     with open('skill_intent.json','r') as f:
-#         json_dic = json.load(f)
-#     for i in json_dic:
-#         if user_text.lower() == i:
-#             if json_dic[i] == "news":
-#                 str_news = news()
-#                 return(str_news)
-#             elif json_dic[i] == "weather":
-#                 url = 'http://ipinfo.io/json'
-#                 response = urlopen(url)
-#                 data = json.load(response)
-#                 weather_data = weather(data['city'])
-#                 return(f"In {weather_data[2]} the current tempature is {weather_data[1]} with {weather_data[0]}")
-#             elif json_dic[i] == "time":
-#                 the_time = time()
-#                 return the_time
-#             elif json_dic[i] =="date":
-#                 the_date = date()
-#                 return the_date
 def checkNonDatabaseLine(user_text):
     if "news" in user_text:
         str_news = news()
@@ -44,18 +24,13 @@ def checkNonDatabaseLine(user_text):
         response = urlopen(url)
         data = json.load(response)
         weather_data = weather(data['city'])
-        return(f"In {weather_data[2]} the current tempature is {weather_data[1]} with {weather_data[0]}")
+        return(f"In {weather_data[2]} the current tempature is {weather_data[1]} with {weather_data[0]} skies")
     elif "time" in user_text:
         the_time = time()
         return the_time
     elif "date" in user_text:
         the_date = date()
         return(the_date)
-win = Tk()
-win.geometry('400x600')
-win.title("Chatbot Training")
-win.configure(bg='white')
-win.resizable(width=False, height=False)
 class ChatbotGUI():
     def __init__(self):
         self.current_word=None
@@ -164,6 +139,12 @@ class ChatbotGUI():
         print(f'Computer: {random_word[0]}: {words_factor[random_word[0]]}')
         self.current_word = random_word[0]
         return(f'{random_word[0]}: {words_factor[random_word[0]]}')   
+#GUI config
+win = Tk()
+win.geometry('500x600')
+win.title("Chatbot Training")
+win.configure(bg='white')
+win.resizable(width=False, height=False)
 chatbotGUI = ChatbotGUI()
 yes_button = Button(win, text="Yes", bd=5,width=100,height=2,fg='red',bg="#32de97", command=chatbotGUI.yes)
 no_button = Button(win,text='No',bd=5,width=100,height=2, fg='blue',bg="#32de97",command=chatbotGUI.no)
@@ -174,7 +155,7 @@ def send():
     EntryBox.delete("0.0",END)
     if msg != '':
         ChatLog.config(state=NORMAL)
-        ChatLog.insert(END, "User: " + msg + '\n\n')
+        ChatLog.insert(END, "User: " + msg + '\n')
         ChatLog.config(foreground="black", font=("Times", 12 ))
         res = (chatbotGUI.giveWord(msg))
         ChatLog.insert(END, "Computer: " + res + '\n\n')
@@ -182,16 +163,16 @@ def send():
 
         ChatLog.config(state=DISABLED)
         ChatLog.yview(END)
-ChatLog = Text(win, bd=0, bg="white", height="8", width="50", font="Times")
+ChatLog = Text(win, bd=0, bg="white", height="20", width="50", font="Times")
 ChatLog.config(state=DISABLED)
 scrollbar = Scrollbar(win,command=ChatLog.yview)
 ChatLog['yscrollcommand']=scrollbar.set
 SendButton = Button(win,font=("vedanta",12,'bold'), text="Send", width="12", height=5,
                     bd=7, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
-                    command= send)
+                    command=send)
 EntryBox = Text(win,bd=0, bg="white",width="29", height="5", font="Times",fg="black")
-scrollbar.place(x=376,y=6, height=386)
-ChatLog.place(x=6,y=6, height=386, width=370)
+scrollbar.place(x=476,y=6, height=386)
+ChatLog.place(x=0,y=3, height=386, width=370)
 EntryBox.place(x=132, y=397, height=85, width=260)
 SendButton.place(x=-7, y=397, height=85) 
-win.mainloop()  
+win.mainloop()      

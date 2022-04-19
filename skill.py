@@ -24,22 +24,31 @@ def news():
 
 # Function to grab weather
 def weather(city):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-    city= (f'{city}+weather')
-    res = requests.get(f'https://www.google.com/search?q={city}&oq={city}&aqs=chrome.0.35i39l2j0l4j46j69i60.6128j1j7&sourceid=chrome&ie=UTF-8',headers=headers)
-    soup = BeautifulSoup(res.text,'html.parser')   
     try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+        city= (f'{city}+weather')
+        res = requests.get(f'https://www.google.com/search?q={city}&oq={city}&aqs=chrome.0.35i39l2j0l4j46j69i60.6128j1j7&sourceid=chrome&ie=UTF-8',headers=headers)
+        soup = BeautifulSoup(res.text,'html.parser')   
         location = soup.select('#wob_loc')[0].getText().strip()  
         # time = soup.select('#wob_dts')[0].getText().strip()       
         info = soup.select('#wob_dc')[0].getText().strip() 
         weather = soup.select('#wob_tm')[0].getText().strip()
         return([info,weather+"°F",location])
-    except IndexError:
-        return("I can't get your location right now")
+    except:
+        return("can't connect to the internet right now please try again later")
 #time
 def time():
     time = datetime.datetime.now().strftime("%I:%M %p")
-    return time
+    return f"It is currently {time}"
+#date
 def date():
-    date = datetime.datetime.now().strftime("%A %d/%m/%Y")
+    day_of_month = datetime.datetime.now().strftime("%d")
+    if day_of_month == "1":
+        date = datetime.datetime.now().strftime("Today is %A %B %dst %Y")
+    elif day_of_month =="2":
+        date = datetime.datetime.now().strftime("Today is %A %B %dnd %Y")
+    elif day_of_month =="3":
+        date = datetime.datetime.now().strftime("Today is %A %B %drd %Y")
+    else:
+        date = datetime.datetime.now().strftime("Today is %A %B %dth %Y")
     return date
