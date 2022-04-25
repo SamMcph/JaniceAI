@@ -7,6 +7,7 @@ from mysqlx import DatabaseError
 from getDatabase import getDatabase
 import mysql.connector
 import json
+import string
 from skill import news, weather, time,date
 try: 
     db_connection = mysql.connector.connect(host='localhost',user='root',password="1234",database='chatbot')
@@ -114,12 +115,14 @@ class ChatbotGUI():
         database = getDatabase(db_connection,self.intent)
         all_words = database.getAllWords()
         known = False
-
-        if checkNonDatabaseLine(user_text.lower()):
-            return(checkNonDatabaseLine(user_text.lower()))
+        #removes punctuation from users text
+        update_text = user_text.translate(str.maketrans('', '', string.punctuation))
+        #check if user is requesting a skill to be used
+        if checkNonDatabaseLine(update_text.lower()):
+            return(checkNonDatabaseLine(update_text.lower()))
         
         for i in all_words:
-            if i == user_text.lower():
+            if i == update_text.lower():
                 
                 known = True
                 self.intent = f'chatbot_data.{all_words[i]}'
