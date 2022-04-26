@@ -1,3 +1,4 @@
+from socketserver import UDPServer
 from tkinter import *  
 import random
 import math
@@ -117,7 +118,10 @@ class ChatbotGUI():
         known = False
         #removes punctuation from users text
         update_text = user_text.translate(str.maketrans('', '', string.punctuation))
-        #check if user is requesting a skill to be used
+        # if " ur " in update_text:
+        update_text = update_text.replace(" u ", ' you ')
+        update_text = update_text.replace(" ur "," your ")
+        print(update_text)
         if checkNonDatabaseLine(update_text.lower()):
             return(checkNonDatabaseLine(update_text.lower()))
         
@@ -128,6 +132,10 @@ class ChatbotGUI():
                 self.intent = f'chatbot_data.{all_words[i]}'
                 GUI = ChatbotGUI()
                 GUI.update_intent(f'chatbot_data.{all_words[i]}')
+        if not known:
+            self.intent = "chatbot_data.nounder"
+            GUI = ChatbotGUI()
+            GUI.update_intent('chatbot_data.nounder')
         print(f"Known: {known}")
         my_percents = []
         my_words= []
@@ -141,7 +149,8 @@ class ChatbotGUI():
             random_word = random.choices(my_words,weights=my_percents)
         print(f'Computer: {random_word[0]}: {words_factor[random_word[0]]}')
         self.current_word = random_word[0]
-        return(f'{random_word[0]}: {words_factor[random_word[0]]}')   
+        return(f'{random_word[0]}: {words_factor[random_word[0]]}')  
+mode = input("Would you like to launch in Traning Mode(1) or Devlopment Mode(2)") 
 #GUI config
 win = Tk()
 win.geometry('500x600')
@@ -149,17 +158,20 @@ win.title("Chatbot Training")
 win.configure(bg='white')
 win.resizable(width=False, height=False)
 chatbotGUI = ChatbotGUI()
-yes_button = Button(win,font=("vedanta",12,'bold'), text="Yes", bd=5,width=100,height=2,fg='red',bg="#32de97", command=chatbotGUI.yes)
-no_button = Button(win,font=("vedanta",12,'bold'),text='No',bd=5,width=100,height=2, fg='blue',bg="#32de97",command=chatbotGUI.no)
-no_button.pack(side='bottom')
-yes_button.pack(side='bottom')
+if mode == "1":
+    yes_button = Button(win,font=("vedanta",12,'bold'), text="Yes", bd=5,width=100,height=2,fg='red',bg="#32de97", command=chatbotGUI.yes)
+    no_button = Button(win,font=("vedanta",12,'bold'),text='No',bd=5,width=100,height=2, fg='blue',bg="#32de97",command=chatbotGUI.no)
+    no_button.pack(side='bottom')
+    yes_button.pack(side='bottom')
+else:
+    win.geometry("500x480")
 def send():
     msg = EntryBox.get("1.0",'end-1c').strip()
     EntryBox.delete("0.0",END)
     if msg != '':
         ChatLog.config(state=NORMAL)
         ChatLog.insert(END, "User: " + msg + '\n')
-        ChatLog.config(foreground="black", font=("Times", 12 ))
+        ChatLog.config(foreground="#442265", font=("Verdana", 11 ))
         res = (chatbotGUI.giveWord(msg))
         ChatLog.insert(END, "Computer: " + res + '\n\n')
         ChatLog.pack(padx=10, pady=10)
@@ -168,8 +180,8 @@ def send():
         ChatLog.yview(END)
 ChatLog = Text(win, bd=0, bg="white", height="20", width="50", font="Times")
 ChatLog.config(state=DISABLED)
-scrollbar = Scrollbar(win,command=ChatLog.yview)
-ChatLog['yscrollcommand']=scrollbar.set
+scrollbar = Scrollbar(win, command=ChatLog.yview)
+ChatLog['yscrollcommand'] = scrollbar.set
 SendButton = Button(win,font=("vedanta",12,'bold'), text="Send", width="12", height=5,
                     bd=7, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
                     command=send)

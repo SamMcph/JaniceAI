@@ -50,6 +50,6 @@ def date():
     elif day_of_month =="3":
         date = datetime.datetime.now().strftime("Today is %A %B %drd %Y")
     else:
-        date = datetime.datetime.now().strftime("Today is %A %B %d %Y")
+        date = datetime.datetime.now().strftime("Today is %A %B %dth %Y")
     return date
     
