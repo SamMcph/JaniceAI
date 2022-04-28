@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import datetime 
-
+import wikipedia
 # Function to grab news
 def news():
     try:
@@ -53,3 +53,7 @@ def date():
         date = datetime.datetime.now().strftime("Today is %A %B %dth %Y")
     return date
     
+def wiki(user_data):
+    user_data = user_data.replace("tell me about", "")      
+    result = wikipedia.summary(user_data, sentences=4)
+    return(result)

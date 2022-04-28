@@ -9,14 +9,16 @@ from getDatabase import getDatabase
 import mysql.connector
 import json
 import string
-from skill import news, weather, time,date
+from skill import news,weather,time,date,wiki
 try: 
     db_connection = mysql.connector.connect(host='localhost',user='root',password="1234",database='chatbot')
 except DatabaseError: 
     print("There infact is an error that has occured probably because the database server isn't turned on.")
+#the equation that is used to calculate the factor
 def equation(x):
         y = (-1*(abs((x-1)/(math.e*(math.sqrt(1+pow(x-1,2)))))))+(math.e/10)
         return y
+# used to check all message to see if they contain words that will trigger a skill
 def checkNonDatabaseLine(user_text):
     if "news" in user_text:
         str_news = news()
@@ -33,6 +35,10 @@ def checkNonDatabaseLine(user_text):
     elif "date" in user_text:
         the_date = date()
         return(the_date)
+    elif 'tell me about' in user_text:
+        the_wiki = wiki(user_text)
+        return(the_wiki)
+#class that dictakes which responeses are returned and the factor of the responses 
 class ChatbotGUI():
     def __init__(self):
         self.current_word=None
@@ -45,6 +51,7 @@ class ChatbotGUI():
             find_percent[i] = percent
         with open("percent.json",'w') as f:
             json.dump(find_percent,f,indent=4)
+    #updates the intent of the response based on user input
     def update_intent(self,intent):
         database = getDatabase(db_connection,intent)
         words_factor = database.getWords()
@@ -54,6 +61,7 @@ class ChatbotGUI():
             find_percent[i] = percent 
         with open('percent.json','w') as f:
             json.dump(find_percent,f,indent=4)
+    #will decrease the factor of a response
     def no(self):
         try:
             database = getDatabase(db_connection,self.intent)
@@ -82,7 +90,8 @@ class ChatbotGUI():
                     json_dic[self.current_word]=int(percent)
                     json.dump(json_dic,f,indent=4)
         except KeyError:
-            print("Please select the Start Conversation button to start the conversation")
+            print("Please Send a Message to dictate the response")
+    # increases the factor of the response
     def yes(self):
         print(self.current_word)
         database = getDatabase(db_connection,self.intent)
@@ -112,6 +121,7 @@ class ChatbotGUI():
                     json.dump(json_dic,f,indent=4)
         except KeyError:
            print("Please Send a Message to dictate the response")
+    #returns a response based on the intent of the user input 
     def giveWord(self,user_text):
         database = getDatabase(db_connection,self.intent)
         all_words = database.getAllWords()
@@ -121,7 +131,6 @@ class ChatbotGUI():
         # if " ur " in update_text:
         update_text = update_text.replace(" u ", ' you ')
         update_text = update_text.replace(" ur "," your ")
-        print(update_text)
         if checkNonDatabaseLine(update_text.lower()):
             return(checkNonDatabaseLine(update_text.lower()))
         
@@ -159,6 +168,7 @@ win.configure(bg='white')
 win.resizable(width=False, height=False)
 chatbotGUI = ChatbotGUI()
 if mode == "1":
+    # creates the button that can dictate the factor of a response
     yes_button = Button(win,font=("vedanta",12,'bold'), text="Yes", bd=5,width=100,height=2,fg='red',bg="#32de97", command=chatbotGUI.yes)
     no_button = Button(win,font=("vedanta",12,'bold'),text='No',bd=5,width=100,height=2, fg='blue',bg="#32de97",command=chatbotGUI.no)
     no_button.pack(side='bottom')
@@ -166,6 +176,7 @@ if mode == "1":
 else:
     win.geometry("500x480")
 def send():
+    #creates the chat log 
     msg = EntryBox.get("1.0",'end-1c').strip()
     EntryBox.delete("0.0",END)
     if msg != '':
@@ -178,6 +189,7 @@ def send():
 
         ChatLog.config(state=DISABLED)
         ChatLog.yview(END)
+# adds parts to the GUI
 ChatLog = Text(win, bd=0, bg="white", height="20", width="50", font="Times")
 ChatLog.config(state=DISABLED)
 scrollbar = Scrollbar(win, command=ChatLog.yview)
@@ -185,9 +197,12 @@ ChatLog['yscrollcommand'] = scrollbar.set
 SendButton = Button(win,font=("vedanta",12,'bold'), text="Send", width="12", height=5,
                     bd=7, bg="#32de97", activebackground="#3c9d9b",fg='#ffffff',
                     command=send)
-EntryBox = Text(win,bd=0, bg="white",width="29", height="5", font="Times",fg="black")
-scrollbar.place(x=476,y=6, height=386)
-ChatLog.place(x=0,y=3, height=386, width=370)
-EntryBox.place(x=132, y=397, height=85, width=260)
+EntryBox = Text(win,bd=0, bg="white",width="29", height="5", font="Times",fg="black",borderwidth=4, relief="groove")
+scrollbar.place(x=487,y=6, height=386)
+ChatLog.place(x=0,y=3, height=386, width=360)
+if mode == "1":
+    EntryBox.place(x=132, y=397, height=87, width=368)
+else:
+    EntryBox.place(x=132, y=397, height=84, width=368)
 SendButton.place(x=-7, y=397, height=85) 
 win.mainloop()      
