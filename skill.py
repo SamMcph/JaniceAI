@@ -1,8 +1,6 @@
 from datetime import datetime
-from inspect import Traceback
 from urllib.request import urlopen
 import requests
-from bs4 import BeautifulSoup
 import json
 import datetime 
 import wikipedia
@@ -18,22 +16,25 @@ def news():
             results.append(i['title'])
         for i in range (10):
             return_statment = return_statment+(f'{i + 1}: {results[i]}\n')
-        return return_statment
+        return "Here are the top ten news stories right now: \n"+return_statment
     except:
         return "can't connect to the internet right now please try again later"
 
 # Function to grab weather
-def weather(city):
+def weather():
     try:
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-        city= (f'{city}+weather')
-        res = requests.get(f'https://www.google.com/search?q={city}&oq={city}&aqs=chrome.0.35i39l2j0l4j46j69i60.6128j1j7&sourceid=chrome&ie=UTF-8',headers=headers)
-        soup = BeautifulSoup(res.text,'html.parser')   
-        location = soup.select('#wob_loc')[0].getText().strip()  
-        # time = soup.select('#wob_dts')[0].getText().strip()       
-        info = soup.select('#wob_dc')[0].getText().strip() 
-        weather = soup.select('#wob_tm')[0].getText().strip()
-        return([info,weather+"°F",location])
+        API_key = "254ff56fd58c0280799acc6c9b423f5c"
+        base_url = "http://api.openweathermap.org/data/2.5/weather?"
+        url = 'http://ipinfo.io/json'
+        response = urlopen(url)
+        data = json.load(response)
+        city= data['city']
+        Final_url = base_url + "appid=" + API_key + "&q=" + city
+        weather_data = requests.get(Final_url).json()
+        temp = weather_data['main']['temp']
+        F = int((temp-273.15)*1.8+32)
+        description = weather_data['weather'][0]['description']
+        return f"In {city}, {data['region']} the current tempature is {F}°F with {description} skies"
     except:
         return("can't connect to the internet right now please try again later")
 #time
@@ -54,6 +55,20 @@ def date():
     return date
     
 def wiki(user_data):
-    user_data = user_data.replace("tell me about", "")      
-    result = wikipedia.summary(user_data, sentences=4)
-    return(result)
+    user_data = user_data.replace("tell me about", "")
+    user_data = user_data.replace("who is ", "")
+    try:   
+        result = wikipedia.summary(user_data, sentences=4)
+        return(result)
+    except:
+        return "there is no wikipedia page with that name"
+
+import psutil
+def battery():
+    battery = psutil.sensors_battery()
+    plugged = battery.power_plugged
+    percent = str(battery.percent)
+    plugged = "Plugged In" if plugged else "Not Plugged In"
+    return(percent+'% | '+plugged)
+
+

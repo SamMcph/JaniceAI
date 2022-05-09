@@ -1,15 +1,12 @@
-from socketserver import UDPServer
 from tkinter import *  
 import random
 import math
-from turtle import color
-from urllib.request import urlopen
 from mysqlx import DatabaseError
 from getDatabase import getDatabase
 import mysql.connector
 import json
 import string
-from skill import news,weather,time,date,wiki
+from skill import battery, news,weather,time,date,wiki,battery
 try: 
     db_connection = mysql.connector.connect(host='localhost',user='root',password="1234",database='chatbot')
 except DatabaseError: 
@@ -24,20 +21,20 @@ def checkNonDatabaseLine(user_text):
         str_news = news()
         return(str_news)
     elif "weather" in user_text:
-        url = 'http://ipinfo.io/json'
-        response = urlopen(url)
-        data = json.load(response)
-        weather_data = weather(data['city'])
-        return(f"In {weather_data[2]} the current tempature is {weather_data[1]} with {weather_data[0]} skies")
+        weather_data = weather()
+        return weather_data
     elif "time" in user_text:
         the_time = time()
         return the_time
     elif "date" in user_text:
         the_date = date()
         return(the_date)
-    elif 'tell me about' in user_text:
+    elif 'tell me about' in user_text or "who is " in user_text:
         the_wiki = wiki(user_text)
         return(the_wiki)
+    elif "battery" in user_text:
+        the_battery = battery()
+        return the_battery
 #class that dictakes which responeses are returned and the factor of the responses 
 class ChatbotGUI():
     def __init__(self):
@@ -128,7 +125,6 @@ class ChatbotGUI():
         known = False
         #removes punctuation from users text
         update_text = user_text.translate(str.maketrans('', '', string.punctuation))
-        # if " ur " in update_text:
         update_text = update_text.replace(" u ", ' you ')
         update_text = update_text.replace(" ur "," your ")
         if checkNonDatabaseLine(update_text.lower()):
@@ -163,14 +159,16 @@ mode = input("Would you like to launch in Traning Mode(1) or Devlopment Mode(2)"
 #GUI config
 win = Tk()
 win.geometry('500x600')
-win.title("Chatbot Training")
+win.title("Janice")
 win.configure(bg='white')
 win.resizable(width=False, height=False)
+p1 = PhotoImage(file = 'logo.png')   
+win.iconphoto(False, p1)
 chatbotGUI = ChatbotGUI()
 if mode == "1":
     # creates the button that can dictate the factor of a response
-    yes_button = Button(win,font=("vedanta",12,'bold'), text="Yes", bd=5,width=100,height=2,fg='red',bg="#32de97", command=chatbotGUI.yes)
-    no_button = Button(win,font=("vedanta",12,'bold'),text='No',bd=5,width=100,height=2, fg='blue',bg="#32de97",command=chatbotGUI.no)
+    yes_button = Button(win,font=("vedanta",12,'bold'), text="Yes", bd=5,width=100,height=2,fg='green',bg="#32de97", command=chatbotGUI.yes)
+    no_button = Button(win,font=("vedanta",12,'bold'),text='No',bd=5,width=100,height=2, fg='red',bg="#32de97",command=chatbotGUI.no)
     no_button.pack(side='bottom')
     yes_button.pack(side='bottom')
 else:
@@ -182,15 +180,16 @@ def send():
     if msg != '':
         ChatLog.config(state=NORMAL)
         ChatLog.insert(END, "User: " + msg + '\n')
-        ChatLog.config(foreground="#442265", font=("Verdana", 11 ))
+        ChatLog.config(foreground="Black", font=("Times", 12 ))
+        # 442265
         res = (chatbotGUI.giveWord(msg))
-        ChatLog.insert(END, "Computer: " + res + '\n\n')
+        ChatLog.insert(END, "Janice: " + res + '\n\n')
         ChatLog.pack(padx=10, pady=10)
 
         ChatLog.config(state=DISABLED)
         ChatLog.yview(END)
 # adds parts to the GUI
-ChatLog = Text(win, bd=0, bg="white", height="20", width="50", font="Times")
+ChatLog = Text(win, bd=0, bg="white", height="21", width="54", font="Times")
 ChatLog.config(state=DISABLED)
 scrollbar = Scrollbar(win, command=ChatLog.yview)
 ChatLog['yscrollcommand'] = scrollbar.set
