@@ -403,7 +403,7 @@ CREATE TABLE `how` (
 
 LOCK TABLES `how` WRITE;
 /*!40000 ALTER TABLE `how` DISABLE KEYS */;
-INSERT INTO `how` VALUES (0,0,'how','I am good how are you',1.91782,'how are you'),(1,1,'how ','I am doing alright how things with you',0.429786,'how\'s everything'),(2,2,'how','I am fine how are you',0.536857,'how are things'),(3,3,'how ','I am going good how is everything',0.655651,'hi how are you'),(4,4,'how','I am doing alright how are you',0.820968,'you all alright'),(5,5,'how','I am doing ok how things with you',0.691763,'how are you doing'),(6,6,'how ','I am doing good how are things with you',0.691763,'how\'s it going'),(7,7,'how','I am good how are you doing',1.7077,'how is it going '),(8,8,'how','',0,'hello how are you'),(9,9,'how','',0,'how is your day going'),(10,10,'how','',0,'how are you today');
+INSERT INTO `how` VALUES (0,0,'how','I am good how are you',1.91782,'how are you'),(1,1,'how ','I am doing alright how things with you',0.429786,'how\'s everything'),(2,2,'how','I am fine how are you',0.536857,'how are things'),(3,3,'how ','I am doing good how is everything',0.655651,'hi how are you'),(4,4,'how','I am doing alright how are you',0.820968,'you all alright'),(5,5,'how','I am doing ok how things with you',0.691763,'how are you doing'),(6,6,'how ','I am doing good how are things with you',0.691763,'how\'s it going'),(7,7,'how','I am good how are you doing',1.7077,'how is it going '),(8,8,'how','',0,'hello how are you'),(9,9,'how','',0,'how is your day going'),(10,10,'how','',0,'how are you today');
 /*!40000 ALTER TABLE `how` ENABLE KEYS */;
 UNLOCK TABLES;
 
